@@ -1,1 +1,1 @@
-** You can find the hosted version in [Render]()
+You can find the hosted version in [Render]()
