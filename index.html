@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Tasty Recipes | Find and Cook Delicious Meals</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { 
+              primary: "#FF6B35", 
+              secondary: "#2EC4B6",
+              dark: "#1f2937",
+              light: "#f9fafb",
+              gray: "#6b7280"
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .recipe-card:hover, .category-card:hover, .cuisine-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .hero-section {
+        background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80');
+        background-size: cover;
+        background-position: center;
+      }
+      .hero-overlay {
+        background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+      }
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm">
+      <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center">
+          <a href="#" class="text-3xl font-['Pacifico'] text-primary">TastyRecipes</a>
+        </div>
+        <nav class="hidden md:flex items-center space-x-8">
+          <a href="#" class="nav-link font-medium text-gray-900 hover:text-primary transition-colors" data-page="home">Home</a>
+          <a href="#" class="nav-link font-medium text-gray-600 hover:text-primary transition-colors" data-page="categories">Categories</a>
+          <a href="#" class="nav-link font-medium text-gray-600 hover:text-primary transition-colors" data-page="cuisines">Cuisines</a>
+          <a href="#" class="nav-link font-medium text-gray-600 hover:text-primary transition-colors" data-page="random">Random Meal</a>
+        </nav>
+        <div class="flex items-center">
+          <button class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:text-primary transition-colors" id="mobile-menu-button">
+            <i class="ri-menu-line ri-xl"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Menu (Hidden by default) -->
+    <div class="fixed inset-0 bg-white z-50 transform translate-x-full transition-transform duration-300 ease-in-out" id="mobile-menu">
+      <div class="flex justify-between items-center p-4 border-b">
+        <a href="#" class="text-2xl font-['Pacifico'] text-primary">TastyRecipes</a>
+        <button class="w-10 h-10 flex items-center justify-center text-gray-700" id="close-menu-button">
+          <i class="ri-close-line ri-xl"></i>
+        </button>
+      </div>
+      <nav class="p-4">
+        <ul class="space-y-4">
+          <li><a href="#" class="nav-link block py-2 px-4 text-gray-900 font-medium rounded hover:bg-gray-100" data-page="home">Home</a></li>
+          <li><a href="#" class="nav-link block py-2 px-4 text-gray-600 font-medium rounded hover:bg-gray-100" data-page="categories">Categories</a></li>
+          <li><a href="#" class="nav-link block py-2 px-4 text-gray-600 font-medium rounded hover:bg-gray-100" data-page="cuisines">Cuisines</a></li>
+          <li><a href="#" class="nav-link block py-2 px-4 text-gray-600 font-medium rounded hover:bg-gray-100" data-page="random">Random Meal</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Home Page -->
+    <div id="home-page" class="page active">
+      <!-- Hero Section -->
+      <section class="hero-section relative h-96 w-full">
+        <div class="hero-overlay absolute inset-0 flex items-center">
+          <div class="container mx-auto px-4">
+            <div class="max-w-2xl">
+              <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">Discover Delicious Recipes</h1>
+              <p class="text-lg text-gray-700">Find and cook amazing meals from around the world with our recipe collection.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recipe Grid Section -->
+      <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+          <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Popular Recipes</h2>
+            <button class="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md text-primary hover:bg-gray-100 transition-colors" id="refresh-random">
+              <i class="ri-refresh-line ri-lg"></i>
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="recipe-grid">
+            <!-- Recipe cards will be inserted here -->
+          </div>
+
+          <div class="mt-10 text-center">
+            <button id="load-more" class="inline-flex items-center px-6 py-3 bg-white text-primary font-medium rounded-button border border-primary hover:bg-primary/5 transition-colors">
+              <i class="ri-add-line mr-2"></i> Load More Recipes
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Newsletter Section -->
+      <section class="py-16 bg-primary/5">
+        <div class="container mx-auto px-4">
+          <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Get Weekly Recipe Inspiration</h2>
+            <p class="text-gray-700 mb-8">
+              Subscribe to our newsletter and receive new recipes, cooking tips, and exclusive content.
+            </p>
+            <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input 
+                type="email" 
+                id="email-input"
+                placeholder="Your email address" 
+                class="w-full py-3 px-4 rounded-button border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/30" 
+                required
+              />
+              <button type="submit" class="w-full sm:w-auto py-3 px-6 bg-primary text-white font-medium rounded-button hover:bg-primary/90 transition-colors">
+                Subscribe
+              </button>
+            </form>
+            <p id="newsletter-message" class="mt-3 text-sm"></p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Categories Page -->
+    <div id="categories-page" class="page">
+      <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold text-gray-900 mb-8">Recipe Categories</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="categories-grid">
+            <!-- Categories will be loaded here -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Cuisines Page -->
+    <div id="cuisines-page" class="page">
+      <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold text-gray-900 mb-8">Cuisine Types</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="cuisines-grid">
+            <!-- Cuisines will be loaded here -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Random Meal Page -->
+    <div id="random-page" class="page">
+      <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+          <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Random Recipe Generator</h2>
+            <button id="generate-random" class="flex items-center px-4 py-2 bg-primary text-white font-medium rounded-button hover:bg-primary/90 transition-colors">
+              <i class="ri-refresh-line mr-2"></i> Generate New
+            </button>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden" id="random-recipe-container">
+            <!-- Random recipe will be shown here -->
+            <div class="p-8 text-center">
+              <i class="ri-restaurant-line text-5xl text-gray-300 mb-4"></i>
+              <p class="text-gray-500">Click "Generate New" to get a random recipe</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer (now properly placed after all content) -->
+    <footer class="bg-gray text-white pt-16 pb-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div>
+            <a href="#" class="text-3xl font-['Pacifico'] text-white mb-4 inline-block">TastyRecipes</a>
+            <p class="text-gray-400 mb-6">
+              Discover and share delicious recipes from around the world.
+            </p>
+            <div class="flex space-x-4">
+              <a href="#" class="w-10 h-10 flex items-center justify-center bg-stone rounded-full hover:bg-primary transition-colors">
+                <i class="ri-facebook-fill"></i>
+              </a>
+              <a href="#" class="w-10 h-10 flex items-center justify-center bg-zinc rounded-full hover:bg-primary transition-colors">
+                <i class="ri-instagram-line"></i>
+              </a>
+              <a href="#" class="w-10 h-10 flex items-center justify-center bg-zinc rounded-full hover:bg-primary transition-colors">
+                <i class="ri-pinterest-line"></i>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Explore</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="nav-link text-gray-400 hover:text-white transition-colors" data-page="home">Home</a></li>
+              <li><a href="#" class="nav-link text-gray-400 hover:text-white transition-colors" data-page="categories">Categories</a></li>
+              <li><a href="#" class="nav-link text-gray-400 hover:text-white transition-colors" data-page="cuisines">Cuisines</a></li>
+              <li><a href="#" class="nav-link text-gray-400 hover:text-white transition-colors" data-page="random">Random Meal</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Information</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-gray-800 pt-8 text-center">
+          <p class="text-gray-500 text-sm">© 2024 TastyRecipes. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Cuisine images mapping with direct Unsplash links
+      const cuisineImages = {
+        "American": "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "British": "https://images.unsplash.com/photo-1606728035253-49e8a23146de?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Canadian": "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Chinese": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "French": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Greek": "https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Indian": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Italian": "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Japanese": "https://images.unsplash.com/photo-1563612116625-3012372fccce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Mexican": "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Spanish": "https://images.unsplash.com/photo-1568600891621-50f697b9a1c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Thai": "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
+        "Vietnamese": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80"
+      };
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const closeMenuButton = document.getElementById("close-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        
+        mobileMenuButton.addEventListener("click", function () {
+          mobileMenu.classList.remove("translate-x-full");
+        });
+        
+        closeMenuButton.addEventListener("click", function () {
+          mobileMenu.classList.add("translate-x-full");
+        });
+
+        // Page navigation
+        const navLinks = document.querySelectorAll(".nav-link");
+        const pages = document.querySelectorAll(".page");
+        
+        navLinks.forEach(link => {
+          link.addEventListener("click", function(e) {
+            e.preventDefault();
+            const pageId = this.getAttribute("data-page");
+            
+            // Hide all pages
+            pages.forEach(page => page.classList.remove("active"));
+            
+            // Show selected page
+            document.getElementById(`${pageId}-page`).classList.add("active");
+            
+            // Close mobile menu if open
+            mobileMenu.classList.add("translate-x-full");
+            
+            // Load content if needed
+            if (pageId === "categories") {
+              loadCategories();
+            } else if (pageId === "cuisines") {
+              loadCuisines();
+            } else if (pageId === "random") {
+              // Already handled by the generate button
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+          });
+        });
+
+        // Newsletter form
+        const newsletterForm = document.getElementById("newsletter-form");
+        const emailInput = document.getElementById("email-input");
+        const newsletterMessage = document.getElementById("newsletter-message");
+        
+        newsletterForm.addEventListener("submit", function(e) {
+          e.preventDefault();
+          const email = emailInput.value.trim();
+          
+          if (!email) {
+            newsletterMessage.textContent = "Please enter your email address";
+            newsletterMessage.className = "mt-3 text-sm text-red-500";
+            return;
+          }
+          
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            newsletterMessage.textContent = "Please enter a valid email address";
+            newsletterMessage.className = "mt-3 text-sm text-red-500";
+            return;
+          }
+          
+          // Simulate form submission
+          newsletterMessage.textContent = "Thank you for subscribing!";
+          newsletterMessage.className = "mt-3 text-sm text-green-500";
+          emailInput.value = "";
+          
+          // In a real app, you would send this to your server
+          console.log("Subscribed email:", email);
+          
+          // Reset message after 3 seconds
+          setTimeout(() => {
+            newsletterMessage.textContent = "";
+            newsletterMessage.className = "mt-3 text-sm";
+          }, 3000);
+        });
+
+        // Recipe app functionality
+        const recipeContainer = document.getElementById("recipe-grid");
+        const loadMoreBtn = document.getElementById("load-more");
+        const refreshButton = document.getElementById("refresh-random");
+        const generateRandomBtn = document.getElementById("generate-random");
+        const randomRecipeContainer = document.getElementById("random-recipe-container");
+        const categoriesGrid = document.getElementById("categories-grid");
+        const cuisinesGrid = document.getElementById("cuisines-grid");
+
+        let currentPage = 1;
+        const mealsPerPage = 6;
+        let allMeals = [];
+
+        // Common function to fetch meal details
+        async function fetchMealDetails(id) {
+          try {
+            const response = await fetch(
+              `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+            );
+            const data = await response.json();
+            return data.meals ? data.meals[0] : null;
+          } catch (err) {
+            console.error("Error fetching meal details:", err);
+            return null;
+          }
+        }
+
+        // Create a recipe card element
+        function createRecipeCard(meal) {
+          const div = document.createElement("div");
+          div.className = "recipe-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300";
+
+          div.innerHTML = `
+            <div class="h-48 overflow-hidden">
+              <img
+                src="${meal.strMealThumb}"
+                alt="${meal.strMeal}"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="text-lg font-semibold text-dark">${meal.strMeal}</h3>
+                <span class="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                  ${meal.strCategory || "Meal"}
+                </span>
+              </div>
+              <p class="text-gray-600 text-sm mb-3">
+                ${meal.strInstructions ? meal.strInstructions.substring(0, 100) + "..." : "Delicious recipe with amazing flavors"}
+              </p>
+              <div class="flex items-center text-gray-600 text-sm mb-4">
+                <div class="flex items-center mr-4">
+                  <i class="ri-time-line mr-1"></i>
+                  <span>~30 min</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="ri-bar-chart-line mr-1"></i>
+                  <span>Easy</span>
+                </div>
+              </div>
+              <a
+                href="${meal.strSource || `https://www.themealdb.com/meal/${meal.idMeal}`}"
+                target="_blank"
+                class="inline-block w-full py-2 bg-primary text-white text-sm font-medium rounded-button hover:bg-primary/90 transition-colors text-center"
+              >
+                View Recipe
+              </a>
+            </div>
+          `;
+          return div;
+        }
+
+        // Create a detailed recipe card
+        function createDetailedRecipeCard(meal) {
+          const div = document.createElement("div");
+          div.className = "flex flex-col md:flex-row";
+          
+          div.innerHTML = `
+            <div class="w-full md:w-1/2">
+              <img
+                src="${meal.strMealThumb}"
+                alt="${meal.strMeal}"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="w-full md:w-1/2 p-6 md:p-8">
+              <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
+                ${meal.strCategory || "Meal"}
+              </span>
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">${meal.strMeal}</h3>
+              <div class="flex items-center text-gray-600 mb-4">
+                <div class="flex items-center mr-4">
+                  <i class="ri-time-line mr-2"></i>
+                  <span>~30 min</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="ri-bar-chart-line mr-2"></i>
+                  <span>Easy</span>
+                </div>
+              </div>
+              <p class="text-gray-700 mb-6">
+                ${meal.strInstructions ? meal.strInstructions.substring(0, 200) + "..." : "Delicious recipe with amazing flavors"}
+              </p>
+              <div class="mb-6">
+                <h4 class="font-semibold mb-2">Ingredients:</h4>
+                <ul class="grid grid-cols-2 gap-2">
+                  ${getIngredientsList(meal)}
+                </ul>
+              </div>
+              <a
+                href="${meal.strSource || `https://www.themealdb.com/meal/${meal.idMeal}`}"
+                target="_blank"
+                class="inline-block px-6 py-3 bg-primary text-white font-medium rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap"
+              >
+                View Full Recipe
+              </a>
+            </div>
+          `;
+          return div;
+        }
+
+        // Helper function to get ingredients list
+        function getIngredientsList(meal) {
+          let ingredients = "";
+          for (let i = 1; i <= 20; i++) {
+            const ingredient = meal[`strIngredient${i}`];
+            const measure = meal[`strMeasure${i}`];
+            if (ingredient && ingredient.trim() !== "") {
+              ingredients += `<li class="text-sm">${measure} ${ingredient}</li>`;
+            }
+          }
+          return ingredients;
+        }
+
+        // Create category card
+        function createCategoryCard(category) {
+          const div = document.createElement("div");
+          div.className = "category-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 cursor-pointer";
+          div.innerHTML = `
+            <div class="h-36 overflow-hidden">
+              <img
+                src="${category.strCategoryThumb}"
+                alt="${category.strCategory}"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-4 text-center">
+              <h3 class="font-semibold text-gray-900">${category.strCategory}</h3>
+            </div>
+          `;
+          
+          div.addEventListener("click", () => {
+            // Navigate to home page with this category filter
+            showRecipesByCategory(category.strCategory);
+          });
+          
+          return div;
+        }
+
+        // Create cuisine card with fixed images
+        function createCuisineCard(area) {
+          const div = document.createElement("div");
+          div.className = "cuisine-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 cursor-pointer";
+          
+          // Use mapped image or fallback to general food image
+          const imageUrl = cuisineImages[area] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80";
+          
+          div.innerHTML = `
+            <div class="h-36 overflow-hidden">
+              <img
+                src="${imageUrl}"
+                alt="${area}"
+                class="w-full h-full object-cover"
+                onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80'"
+              />
+            </div>
+            <div class="p-4 text-center">
+              <h3 class="font-semibold text-gray-900">${area}</h3>
+            </div>
+          `;
+          
+          div.addEventListener("click", () => {
+            // Navigate to home page with this cuisine filter
+            showRecipesByArea(area);
+          });
+          
+          return div;
+        }
+
+        // Load categories
+        async function loadCategories() {
+          try {
+            const response = await fetch("https://www.themealdb.com/api/json/v1/1/categories.php");
+            const data = await response.json();
+            categoriesGrid.innerHTML = "";
+            
+            if (data.categories) {
+              data.categories.forEach(category => {
+                categoriesGrid.appendChild(createCategoryCard(category));
+              });
+            }
+          } catch (err) {
+            console.error("Error loading categories:", err);
+          }
+        }
+
+        // Load cuisines (areas)
+        async function loadCuisines() {
+          try {
+            const response = await fetch("https://www.themealdb.com/api/json/v1/1/list.php?a=list");
+            const data = await response.json();
+            cuisinesGrid.innerHTML = "";
+            
+            if (data.meals) {
+              data.meals.forEach(area => {
+                cuisinesGrid.appendChild(createCuisineCard(area.strArea));
+              });
+            }
+          } catch (err) {
+            console.error("Error loading cuisines:", err);
+          }
+        }
+
+        // Show recipes by category
+        async function showRecipesByCategory(category) {
+          try {
+            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
+            const data = await response.json();
+            recipeContainer.innerHTML = "";
+            
+            if (data.meals) {
+              document.getElementById("home-page").classList.add("active");
+              document.getElementById("categories-page").classList.remove("active");
+              
+              const detailsPromises = data.meals.map(meal => fetchMealDetails(meal.idMeal));
+              const detailedMeals = await Promise.all(detailsPromises);
+              
+              detailedMeals.forEach(mealDetails => {
+                if (mealDetails) {
+                  recipeContainer.appendChild(createRecipeCard(mealDetails));
+                }
+              });
+            }
+          } catch (err) {
+            console.error("Error loading recipes by category:", err);
+          }
+        }
+
+        // Show recipes by area
+        async function showRecipesByArea(area) {
+          try {
+            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${area}`);
+            const data = await response.json();
+            recipeContainer.innerHTML = "";
+            
+            if (data.meals) {
+              document.getElementById("home-page").classList.add("active");
+              document.getElementById("cuisines-page").classList.remove("active");
+              
+              const detailsPromises = data.meals.map(meal => fetchMealDetails(meal.idMeal));
+              const detailedMeals = await Promise.all(detailsPromises);
+              
+              detailedMeals.forEach(mealDetails => {
+                if (mealDetails) {
+                  recipeContainer.appendChild(createRecipeCard(mealDetails));
+                }
+              });
+            }
+          } catch (err) {
+            console.error("Error loading recipes by area:", err);
+          }
+        }
+
+        // Fetch random meal
+        async function fetchRandomMeal() {
+          try {
+            const response = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
+            const data = await response.json();
+            return data.meals ? data.meals[0] : null;
+          } catch (err) {
+            console.error("Error fetching random meal:", err);
+            return null;
+          }
+        }
+
+        // Generate random recipe
+        async function generateRandomRecipe() {
+          generateRandomBtn.disabled = true;
+          generateRandomBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i> Generating...';
+          
+          try {
+            const meal = await fetchRandomMeal();
+            if (meal) {
+              randomRecipeContainer.innerHTML = "";
+              randomRecipeContainer.appendChild(createDetailedRecipeCard(meal));
+            }
+          } catch (err) {
+            console.error("Error generating random recipe:", err);
+          } finally {
+            generateRandomBtn.disabled = false;
+            generateRandomBtn.innerHTML = '<i class="ri-refresh-line mr-2"></i> Generate New';
+          }
+        }
+
+        // Fetch meals (initial load)
+        async function fetchRecipes(category = "Chicken") {
+          try {
+            const response = await fetch(
+              `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+            );
+            const data = await response.json();
+            return data.meals || [];
+          } catch (err) {
+            console.error("Error fetching recipes:", err);
+            return [];
+          }
+        }
+
+        // Render a batch of meals
+        async function renderMeals(meals) {
+          try {
+            const detailsPromises = meals.map(mealSummary => fetchMealDetails(mealSummary.idMeal));
+            const detailedMeals = await Promise.all(detailsPromises);
+            
+            detailedMeals.forEach(mealDetails => {
+              if (mealDetails) {
+                const card = createRecipeCard(mealDetails);
+                recipeContainer.appendChild(card);
+              }
+            });
+          } catch (error) {
+            console.error("Error rendering meals:", error);
+          }
+        }
+
+        // Load next page of recipes
+        async function loadRecipes() {
+          if (allMeals.length === 0) {
+            allMeals = await fetchRecipes();
+          }
+          
+          const start = (currentPage - 1) * mealsPerPage;
+          const end = start + mealsPerPage;
+          const mealsToShow = allMeals.slice(start, end);
+
+          if (mealsToShow.length === 0) {
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.innerHTML = '<span>No More Recipes</span>';
+            return;
+          }
+
+          await renderMeals(mealsToShow);
+        }
+
+        // Load random meal for refresh button
+        async function loadRandomMeal() {
+          refreshButton.classList.add("animate-spin");
+          try {
+            const meal = await fetchRandomMeal();
+            if (meal) {
+              // Replace first card with random meal
+              const firstCard = recipeContainer.querySelector(".recipe-card");
+              const newCard = createRecipeCard(meal);
+              if (firstCard) {
+                recipeContainer.replaceChild(newCard, firstCard);
+              } else {
+                recipeContainer.appendChild(newCard);
+              }
+            }
+          } catch (err) {
+            console.error("Failed to fetch random meal", err);
+          } finally {
+            refreshButton.classList.remove("animate-spin");
+          }
+        }
+
+        // Initial load
+        loadRecipes();
+        loadCategories();
+        loadCuisines();
+
+        // Event listeners
+        loadMoreBtn.addEventListener("click", () => {
+          currentPage++;
+          loadRecipes();
+        });
+
+        refreshButton.addEventListener("click", loadRandomMeal);
+        generateRandomBtn.addEventListener("click", generateRandomRecipe);
+      });
+    </script>
+  </body>
+</html>
